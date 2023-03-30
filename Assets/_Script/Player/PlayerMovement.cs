@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour,ItakeKnockBack
 {
-    
-    [SerializeField] private float flt_SpeedOfHitBySomeThing;
+    [SerializeField]private float flt_KnockBackForce;
     [SerializeField] private float flt_SpeedOfPlayer;
     [SerializeField] private float flt_JumpForce;
     [SerializeField] private float flt_SpeedRate;
-    [SerializeField] private float flt_SpeedOfHitTimeEnemy;
     [SerializeField] private Animator animator;
     private float flt_VerticalInput;
     private float flt_HorizontalInput;
@@ -18,11 +16,11 @@ public class PlayerMovement : MonoBehaviour,ItakeKnockBack
     private string tag_Ground = "Ground";
     private float targetAngle;
     private float currentAngle;
-    [SerializeField]private bool isHitBySomething;
+  
 
     // Camponant
     private Rigidbody playerRb;
-    private Vector3 direction;
+   
   
 
     private void Start() {
@@ -30,6 +28,12 @@ public class PlayerMovement : MonoBehaviour,ItakeKnockBack
     }
     private void Update() {
 
+        if (transform.position.y<-10) {
+            GameManager.instance.isPlayerLive = false;
+            UIManager.instance.screen_UIGamePlayScreen.gameObject.SetActive(false);
+            UIManager.instance.screen_UIGameOverScreen.gameObject.SetActive(true);
+            Destroy(gameObject);
+        }
         GetInput();
         PlayerMotion();
         PlayerJump();
@@ -58,11 +62,8 @@ public class PlayerMovement : MonoBehaviour,ItakeKnockBack
 
     private void PlayerMotion() {
 
-        if (isHitBySomething) {
-            animator.SetBool("IsRuning", false);
-            transform.Translate(new Vector3(direction.x, 0, direction.z) * flt_SpeedOfHitTimeEnemy * Time.deltaTime);
-        }
-        else {
+        
+       
             if (flt_HorizontalInput == 0 && flt_VerticalInput == 0) {
                 animator.SetBool("IsRuning", false);
                 return;
@@ -74,7 +75,7 @@ public class PlayerMovement : MonoBehaviour,ItakeKnockBack
 
             transform.eulerAngles = new Vector3(0, currentAngle, 0);
             transform.position += transform.right * flt_SpeedOfPlayer * Time.deltaTime;
-        }
+        
 
        
     }
@@ -88,15 +89,15 @@ public class PlayerMovement : MonoBehaviour,ItakeKnockBack
     }
 
     public void KnockbackVFX(Vector3 dirction) {
-        isHitBySomething = true;
-        this.direction = dirction;
+
+        playerRb.AddForce(dirction * flt_KnockBackForce, ForceMode.Impulse);
         StartCoroutine(SetHitBySomething());
     }
 
    
     private IEnumerator SetHitBySomething() {
         yield return new WaitForSeconds(0.2f);
-        isHitBySomething = false;
+       
         playerRb.velocity = Vector3.zero;
         playerRb.angularVelocity = Vector3.zero;
     }

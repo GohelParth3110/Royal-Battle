@@ -16,6 +16,7 @@ public class EnemyHealth : MonoBehaviour,ItakeDamage
         flt_CurrrentHealth -= damage;
         if (flt_CurrrentHealth <= 0) {
             Destroy(gameObject);
+            PowerUpManager.instnce.SpawnPowerUp();
         }
     }
 }

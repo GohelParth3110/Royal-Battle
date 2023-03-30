@@ -7,6 +7,7 @@ public class EnemyShooting : MonoBehaviour
 {
     [SerializeField]private int damage;
     [SerializeField] private GameObject bullet;
+    [SerializeField] private GameObject bullet_Muzzle;
     [SerializeField] private Transform transform_BulletPostion;
     [SerializeField] private float flt_BulletFireRate;
     [SerializeField] private float flt_CurrentTime;
@@ -14,6 +15,9 @@ public class EnemyShooting : MonoBehaviour
     
 
     private void Update() {
+        if (!GameManager.instance.isPlayerLive) {
+            return;
+        }
 
         FireBullet();
     }
@@ -24,7 +28,8 @@ public class EnemyShooting : MonoBehaviour
             flt_CurrentTime = 0;
             GameObject gameObject =    Instantiate(bullet, transform_BulletPostion.position, transform_BulletPostion.rotation);
             gameObject.GetComponent<BulletMotion>().SetBulletData(transform_BulletPostion.right, damage);
-           
+            Instantiate(bullet_Muzzle, transform_BulletPostion.position, bullet_Muzzle.transform.rotation);
+
         }
     }
   
